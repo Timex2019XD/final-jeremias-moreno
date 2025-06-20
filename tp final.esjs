@@ -1,39 +1,58 @@
-importar { Terminal } desde "@es-js/terminal"
-importar { obtenerJson } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/obtener-json.js"
-importar { validarSecreto } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/validar-secreto.js"
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cotización Dólar Blue</title>
+</head>
+<body>
+  <h1>Cotización Dólar Blue</h1>
+  <div id="app">
+    <label>Palabra secreta: <input type="password" id="secreto"></label>
+    <button onclick="validar()">Ingresar</button>
+    <div id="mensaje"></div>
+    <div id="cotizacion" style="margin-top:1em;"></div>
+  </div>
+  <script>
+    const dni = "47775483"; // Tu DNI
 
-asincrono funcion inicio() {
-  Terminal.escribir("Hola! Ingresa la palabra secreta:")
+    async function validar() {
+      const secreto = document.getElementById('secreto').value;
+      const mensaje = document.getElementById('mensaje');
+      const cotizacion = document.getElementById('cotizacion');
+      mensaje.textContent = '';
+      cotizacion.textContent = '';
 
-  var secreto = esperar Terminal.leer()
+      // Validar secreto (simulación, reemplaza por tu lógica real si tienes endpoint)
+      const valido = await validarSecreto(dni, secreto);
 
-  var dni = "47775483" // Ingresa tu DNI aquí 👈
+      if (valido) {
+        mostrarCotizacion();
+      } else {
+        mensaje.textContent = "Palabra secreta inválida";
+      }
+    }
 
-  si (esperar validarSecreto(dni, secreto)) {
-    esperar mostrarCotizacion()
-  } sino {
-    Terminal.escribir("Palabra secreta inválida")
-  }
+    // Simulación de validación (reemplaza por tu endpoint real si lo tienes)
+    async function validarSecreto(dni, secreto) {
+      // Ejemplo: acepta "1234" como palabra secreta
+      return secreto === "1234";
+    }
 
-  Terminal.escribir("Presiona ENTER para volver a ingresar")
-
-  esperar Terminal.leerEnter()
-
-  Terminal.limpiar()
-
-  inicio()
-}
-
-asincrono funcion mostrarCotizacion() {
-    const dolarBlue = esperar obtenerJson('https://dolarapi.com/v1/dolares/blue')
-    Terminal.escribir("dolar blue")  
-    Terminal.escribir("precio de venta")    
-    Terminal.escribir(dolarBlue.venta)
-
-    Terminal.escribir("precio de compra")    
-    Terminal.escribir(dolarBlue.compra)
-    Terminal.escribir("fecha de cotizacion")    
-    Terminal.escribir(dolarBlue.fechaActualizacion)
-}
-
-inicio()
+    async function mostrarCotizacion() {
+      const cotizacion = document.getElementById('cotizacion');
+      cotizacion.textContent = "Cargando...";
+      try {
+        const resp = await fetch('https://dolarapi.com/v1/dolares/blue');
+        const data = await resp.json();
+        cotizacion.innerHTML = `
+          <strong>Precio de venta:</strong> ${data.venta}<br>
+          <strong>Precio de compra:</strong> ${data.compra}<br>
+          <strong>Fecha de cotización:</strong> ${data.fechaActualizacion}
+        `;
+      } catch (e) {
+        cotizacion.textContent = "Error al obtener la cotización.";
+      }
+    }
+  </script>
+</body>
+</html>
