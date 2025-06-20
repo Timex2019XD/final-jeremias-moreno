@@ -12,7 +12,9 @@
       <div id="mensaje"></div>
       <div id="cotizacion" style="margin-top: 1em"></div>
     </div>
-    <script>
+    <script type="module">
+      import { validarSecreto } from "https://desarrollo-aplicaciones.vercel.app/2024/code/validar-secreto.js";
+
       const dni = "47775483"; // Tu DNI
 
       async function validar() {
@@ -22,7 +24,7 @@
         mensaje.textContent = "";
         cotizacion.textContent = "";
 
-        // Validar secreto (simulación, reemplaza por tu lógica real si tienes endpoint)
+        // Usar la función importada para validar el secreto
         const valido = await validarSecreto(dni, secreto);
 
         if (valido) {
@@ -32,12 +34,6 @@
         }
       }
 
-      // Simulación de validación (reemplaza por tu endpoint real si lo tienes)
-      async function validarSecreto(dni, secreto) {
-        // Ejemplo: acepta "1234" como palabra secreta
-        return secreto === "1234";
-      }
-
       async function mostrarCotizacion() {
         const cotizacion = document.getElementById("cotizacion");
         cotizacion.textContent = "Cargando...";
@@ -45,14 +41,17 @@
           const resp = await fetch("https://dolarapi.com/v1/dolares/blue");
           const data = await resp.json();
           cotizacion.innerHTML = `
-          <strong>Precio de venta:</strong> ${data.venta}<br>
-          <strong>Precio de compra:</strong> ${data.compra}<br>
-          <strong>Fecha de cotización:</strong> ${data.fechaActualizacion}
-        `;
+            <strong>Precio de venta:</strong> ${data.venta}<br>
+            <strong>Precio de compra:</strong> ${data.compra}<br>
+            <strong>Fecha de cotización:</strong> ${data.fechaActualizacion}
+          `;
         } catch (e) {
           cotizacion.textContent = "Error al obtener la cotización.";
         }
       }
+
+      // Hacer la función validar global para el botón
+      window.validar = validar;
     </script>
   </body>
 </html>
